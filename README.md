@@ -64,77 +64,22 @@ managing and appropriately handle the data structures you use in your templates
 
 Flat file, documentation on how to contribute.
 
-**`moduleroot/Gemfile`**
-
-The Gemfile contains a list of gems, optionally with versions, to install in
-the development and test groups. config_defaults.yml contains a list of
-"required" gems to install, in the form of an array where each element contains
-the names and versions of the gems. This section of config_defaults.yml might
-look like
-
-```
-Gemfile:
-  required:
-  - gem: rake
-    version: '~>1.2'
-  - gem: rspec-puppet
-#...
-```
-
-The template also looks in .sync.yml for a group of optional gems to install,
-and merges this list with the list found in config_defaults.yml. This section
-of .sync.yml will look the same as the section of config_defaults.yml, but the
-name will be "optional" rather than "required".
-
-**`moduleroot/Rakefile`**
-
-The Rakefile gets most of its tasks from the puppetlabs_spec_helper. The
-variables in the template represent lint checks to disable. config_defaults.yml
-contains an array of checks to pass in to PuppetLint.configuration.send. The
-key for this array is called default_disabled_lint_checks. .sync.yml may
-contain an additional array of checks to disable, with the key
-extra_disabled_lint_checks.
-
 **`moduleroot/.gitignore`**
 
 Contains some standard files to ignore. You can pass in additional files as an
 array with the key "paths" in your .gitignore section in .sync.yml.
 
-**`moduleroot/.travis.yml`**
+**`moduleroot/circle.yml`**
 
-The TravisCI file is itself a YAML file with values defined in the YAML files
-config_defaults.yml and .sync.yml. You can pass a custom one-line script to the
-script parameter. The file gets a set of default test environments from
-config_defaults.yml under the includes key. The .travis.yml section in
-config_defaults.yml might look like:
+The circle.yml file is itself a YAML file with values defined in the YAML files
+config_defaults.yml and .sync.yml. Since the circle.yml in the modules are very different, it is updated just based on the current git branch. The config_defaults.yml could be left empty. 
 
-```
-.travis.yml:
-  script: "\"bundle exec rake validate && bundle exec rake lint && bundle exec rake spec SPEC_OPTS='--format documentation'\""
-  includes:
-  - rvm: 1.8.7
-    env: PUPPET_GEM_VERSION="~> 3.0"
-  - rvm: 1.9.3
-    env: PUPPET_GEM_VERSION="~> 3.0"
-  - rvm: 2.0.0
-    env: PUPPET_GEM_VERSION="~> 3.0"
-```
+**`moduleroot/project/build.properties`**
+
+Contains the build properties required for a module.
 
 You can add additional environments for a specific module to test by adding an
 extras: section with the same format to the module's .sync.yml.
-
-**`moduleroot/spec/spec.opts`**
-
-Flat file containing some default rspec options.
-
-**`moduleroot/spec/spec_helper.rb`**
-
-Flat file that simply requires the module_spec_helper from the
-puppetlabs_spec_helper.
-
-**`moduleroot/spec/acceptance/nodesets/*`**
-
-Flat files containing default nodesets to run beaker-rspec on.
 
 Special Options
 ---------------
