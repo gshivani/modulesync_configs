@@ -12,7 +12,7 @@ dependencies:
     - docker rmi $(docker images -q) || true
     # Uses ENVs set in the CircleCI UI.
     - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS quay.io
-		<% elsif @configs[:puppet_module].to_s == 'modulesynctest2' -%>
+		<% elsif @configs[:puppet_module].to_s == 'skywalk' -%>
 		# Install sbt 0.13.7 (via tee to account for sudo madness)
 	  - echo "deb http://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
 	  - sudo apt-get update && sudo apt-get install sbt
