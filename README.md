@@ -95,7 +95,7 @@ true`. For example,
 
 ```
 ---
-spec/spec_helper.rb:
+moduleroot/circle.yml:
   unmanaged: true
 ```
 
@@ -109,6 +109,6 @@ example,
 
 ```
 ---
-spec/acceptance/nodesets/sles-11sp1-x64.yml
+moduleroot/project/build.properties
   delete: true
 ```
