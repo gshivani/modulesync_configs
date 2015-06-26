@@ -1,0 +1,64 @@
+	machine:
+  java:
+    version: oraclejdk8
+  services:
+    - docker
+
+dependencies:
+	pre:
+		<% if @configs[:puppet_module].to_s == 'itc' -%>
+		# Clean up all old docker images, just in case.
+    - docker rm $(docker ps -aq) || true
+    - docker rmi $(docker images -q) || true
+    # Uses ENVs set in the CircleCI UI.
+    - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS quay.io
+		<% elsif @configs[:puppet_module].to_s == 'modulesynctest2' -%>
+		# Install sbt 0.13.7 (via tee to account for sudo madness)
+	  - echo "deb http://dl.bintray.com/sbt/debian /" | sudo tee -a /etc/apt/sources.list.d/sbt.list
+	  - sudo apt-get update && sudo apt-get install sbt
+	override:
+		- sbt ";test:compile ;it:compile"
+<% end -%>
+
+deployment:
+<% if @configs[:puppet_module].to_s == 'itc' -%>
+  dev: 
+    branch: master
+    commands:
+      - sbt assembly
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS quay.io
+      - docker build -t="quay.io/ntoggle/itc:master" .
+      - docker push quay.io/ntoggle/itc:master
+      - curl -k --data "host_config_key=${ANSIBLE_HOST_KEY}" https://circleci:${ANSIBLE_PASS}@184.173.168.34:443/api/v1/job_templates/76/launch/
+
+  staging: 
+    branch: integration
+    commands:
+      - sbt assembly
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS quay.io
+      - docker build -t="quay.io/ntoggle/itc:integration" .
+      - docker push quay.io/ntoggle/itc:integration
+      - curl -k --data "host_config_key=${ANSIBLE_HOST_KEY}" https://circleci:${ANSIBLE_PASS}@184.173.168.34:443/api/v1/job_templates/77/launch/
+
+  unknown:
+    branch: staging
+    commands:
+      - sbt assembly
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS quay.io
+      - docker build -t="quay.io/ntoggle/itc:staging" .
+      - docker push quay.io/ntoggle/itc:staging
+	<%- elsif @configs[:puppet_module].to_s == 'skywalk' -%>
+	hub:
+	    branch: master
+	    commands:
+	      - sbt assembly
+	      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS quay.io
+	      - docker build --no-cache -t="quay.io/ntoggle/skywalk:snapshot" .
+	      - docker push quay.io/ntoggle/skywalk:snapshot
+	      - docker build -t="quay.io/ntoggle/skywalk:`cut  -d\"\\"\" -f 2 version.sbt`" .
+	      - docker push quay.io/ntoggle/skywalk:`cut  -d"\"" -f 2 version.sbt`
+	  publish:
+	    branch: master
+	    commands:
+	      - sbt publish
+	<%- end -%>
