@@ -1,15 +1,12 @@
 ModuleSync Configs
 ==================
 
-This repository contains default configuration for
-[modulesync](http://github.com/puppetlabs/modulesync) for the Puppet Labs
-puppet modules. Changes to this repository should be synced with modulesync
-across all of the Puppet Labs modules. It can also be used as an example for
-creating default configuration for other community modules.
+This repository is a modified version of [modulesync](http://github.com/puppetlabs/modulesync) that suits the needs of nToggle. It contains default configuration for the nToggle modules. Changes to this repository should be synced with modulesync
+across all of the nToggle modules.
 
 A full description of ModuleSync can be found in [ModuleSync's
 README](https://github.com/puppetlabs/modulesync). This README describes how
-the templates are rendered in the Puppet Labs configuration.
+the templates are rendered in the nToggle configuration.
 
 Configuring ModuleSync
 ----------------------
